@@ -292,9 +292,9 @@ function testFunc(trigger) {
 		
         chart.series[0].addPoint({ color: colors.shift(),  y: endTime-startTime });
 		
-        setTimeout(function () {
+        //setTimeout(function () {
             t();
-        }, 2000);      
+        //}, 800);      
     })();
 }
 </script>
@@ -399,106 +399,9 @@ function testFunc(trigger) {
 	<!-- easyTemplate 的模板 -->
 	<script id="easyTemplate" type="text/tmpl">
 	<ul>
-<li>{{=d0}}</li>
-<li>{{=d1}}</li>
-<li>{{=d2}}</li>
-<li>{{=d3}}</li>
-<li>{{=d4}}</li>
-<li>{{=d5}}</li>
-<li>{{=d6}}</li>
-<li>{{=d7}}</li>
-<li>{{=d8}}</li>
-<li>{{=d9}}</li>
-<li>{{=d10}}</li>
-<li>{{=d11}}</li>
-<li>{{=d12}}</li>
-<li>{{=d13}}</li>
-<li>{{=d14}}</li>
-<li>{{=d15}}</li>
-<li>{{=d16}}</li>
-<li>{{=d17}}</li>
-<li>{{=d18}}</li>
-<li>{{=d19}}</li>
-<li>{{=d20}}</li>
-<li>{{=d21}}</li>
-<li>{{=d22}}</li>
-<li>{{=d23}}</li>
-<li>{{=d24}}</li>
-<li>{{=d25}}</li>
-<li>{{=d26}}</li>
-<li>{{=d27}}</li>
-<li>{{=d28}}</li>
-<li>{{=d29}}</li>
-<li>{{=d30}}</li>
-<li>{{=d31}}</li>
-<li>{{=d32}}</li>
-<li>{{=d33}}</li>
-<li>{{=d34}}</li>
-<li>{{=d35}}</li>
-<li>{{=d36}}</li>
-<li>{{=d37}}</li>
-<li>{{=d38}}</li>
-<li>{{=d39}}</li>
-<li>{{=d40}}</li>
-<li>{{=d41}}</li>
-<li>{{=d42}}</li>
-<li>{{=d43}}</li>
-<li>{{=d44}}</li>
-<li>{{=d45}}</li>
-<li>{{=d46}}</li>
-<li>{{=d47}}</li>
-<li>{{=d48}}</li>
-<li>{{=d49}}</li>
-<li>{{=d50}}</li>
-<li>{{=d51}}</li>
-<li>{{=d52}}</li>
-<li>{{=d53}}</li>
-<li>{{=d54}}</li>
-<li>{{=d55}}</li>
-<li>{{=d56}}</li>
-<li>{{=d57}}</li>
-<li>{{=d58}}</li>
-<li>{{=d59}}</li>
-<li>{{=d60}}</li>
-<li>{{=d61}}</li>
-<li>{{=d62}}</li>
-<li>{{=d63}}</li>
-<li>{{=d64}}</li>
-<li>{{=d65}}</li>
-<li>{{=d66}}</li>
-<li>{{=d67}}</li>
-<li>{{=d68}}</li>
-<li>{{=d69}}</li>
-<li>{{=d70}}</li>
-<li>{{=d71}}</li>
-<li>{{=d72}}</li>
-<li>{{=d73}}</li>
-<li>{{=d74}}</li>
-<li>{{=d75}}</li>
-<li>{{=d76}}</li>
-<li>{{=d77}}</li>
-<li>{{=d78}}</li>
-<li>{{=d79}}</li>
-<li>{{=d80}}</li>
-<li>{{=d81}}</li>
-<li>{{=d82}}</li>
-<li>{{=d83}}</li>
-<li>{{=d84}}</li>
-<li>{{=d85}}</li>
-<li>{{=d86}}</li>
-<li>{{=d87}}</li>
-<li>{{=d88}}</li>
-<li>{{=d89}}</li>
-<li>{{=d90}}</li>
-<li>{{=d91}}</li>
-<li>{{=d92}}</li>
-<li>{{=d93}}</li>
-<li>{{=d94}}</li>
-<li>{{=d95}}</li>
-<li>{{=d96}}</li>
-<li>{{=d97}}</li>
-<li>{{=d98}}</li>
-<li>{{=d99}}</li>
+		<#list data.list as item>
+			<li>${item.index}. 用户: ${item.name}/ 网站：${item.age}</li>
+		</#list>
 	</ul>
 	</script>
 	
