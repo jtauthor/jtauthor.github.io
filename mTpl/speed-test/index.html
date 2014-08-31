@@ -292,9 +292,9 @@ function testFunc(trigger) {
 		
         chart.series[0].addPoint({ color: colors.shift(),  y: endTime-startTime });
 		
-        setTimeout(function () {
+        //setTimeout(function () {
             t();
-        }, 2000);      
+        //}, 800);      
     })();
 }
 </script>
@@ -400,7 +400,11 @@ function testFunc(trigger) {
 	<script id="easyTemplate" type="text/tmpl">
 	<ul>
 		<#list data.list as item>
+<<<<<<< HEAD
 			<li>序号：${item.index} 姓名： ${item.name} 年龄：${item.age}</li>
+=======
+			<li>${item.index}. 用户: ${item.name}/ 网站：${item.age}</li>
+>>>>>>> FETCH_HEAD
 		</#list>
 	</ul>
 	</script>
