@@ -305,9 +305,9 @@ function testFunc(trigger) {
 		
         chart.series[0].addPoint({ color: colors.shift(),  y: endTime-startTime });
 		
-        //setTimeout(function () {
+        setTimeout(function () {
             t();
-        //}, 800);      
+        }, 2000);      
     })();
 }
 </script>
