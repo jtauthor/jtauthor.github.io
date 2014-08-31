@@ -10,6 +10,7 @@
 </style>
 <script src="js/jquery-1.7.2.min.js"></script>
 <script src="js/highcharts.js"></script>
+<script src="js/txtpl.js"></script>
 <script src="js/mtpl_v1.0.js"></script>
 <script src="js/tmpl.js"></script>
 <script src="js/ejs.js"></script>
@@ -27,6 +28,18 @@
 //生成测试案例list 
 function renderTestCaseList(caseSwitcher, joinChar, n, times, data){	
 	var _testCaseList={
+		txTpl : {
+			name: 'txTpl',
+			tester: function () {
+				var source = document.getElementById('txTpl').innerHTML;
+				var s='';
+				for (var i = 0; i < times; i++) {
+					s = txTpl(source, data);				
+				} 
+				return s;
+			}
+		},
+
 		mTpl : {
 			name: 'mTpl',
 			tester: function () {
@@ -303,6 +316,15 @@ function testFunc(trigger) {
 <body>
 
 <div id="template-box">
+	<!-- txTpl 的模板 -->
+	<script id="txTpl" type="text/tmpl">
+	<ul>
+		<% for (i = 0, l = list.length; i < l; i++) { %>
+			<li><%=list[i].index%>姓名: <%=list[i].name%> 年龄：<%=list[i].age%></li>
+		<% } %>
+	</ul>
+	</script>
+
 	<!-- mTpl 的模板 -->
 	<script id="mTpl" type="text/tmpl">
 	<ul>
@@ -400,11 +422,8 @@ function testFunc(trigger) {
 	<script id="easyTemplate" type="text/tmpl">
 	<ul>
 		<#list data.list as item>
-<<<<<<< HEAD
 			<li>序号：${item.index} 姓名： ${item.name} 年龄：${item.age}</li>
-=======
 			<li>${item.index}. 用户: ${item.name}/ 网站：${item.age}</li>
->>>>>>> FETCH_HEAD
 		</#list>
 	</ul>
 	</script>
@@ -426,8 +445,8 @@ function testFunc(trigger) {
 <div class="box">
 	<p> 数据条数:<input type="text" value="10000" />  </p>
 	<p> 渲染次数:<input type="text" value="1" /> </p>
-	<p> 测试案例:<input type="text" value="mTpl, juicer, doT, artTemplate" style="width:620px;" /> </p>
-	<p>(用逗号隔开，可选测试案例：mTpl, tmpl, ejs,  Mustache, juicer, doT, artTemplate, baiduTemplate, kissyTemplate, easyTemplate, jqueryTmpl)</p>
+	<p> 测试案例:<input type="text" value="txTpl, juicer, doT, artTemplate" style="width:620px;" /> </p>
+	<p>(用逗号隔开，可选测试案例：txTpl, tmpl, ejs,  Mustache, juicer, doT, artTemplate, baiduTemplate, kissyTemplate, easyTemplate, jqueryTmpl)</p>
 </div>
 
 <p>
