@@ -4,13 +4,17 @@
 <meta charset="utf-8" />
 <title>template speed test</title>
 <style>
-.box p{margin:0;}
+.wrap{padding: 0 10px;}
+.box p{margin:8px 0 0;}
 .box input{width:100px;}
+.box input.case{width:90%;}
 .box span{color:#333;}
+#sort{display: none;font-weight: bold;}
 </style>
 <script src="js/jquery-1.7.2.min.js"></script>
 <script src="js/highcharts.js"></script>
-<script src="js/mtpl_v1.0.js"></script>
+<script src="js/mtpl_v2.0.js"></script>
+<script src="js/txtpl.js"></script>
 <script src="js/tmpl.js"></script>
 <script src="js/ejs.js"></script>
 <script src="js/dot.js"></script>
@@ -22,32 +26,56 @@
 <script src="js/baidu.template.js"></script>
 <script src="js/jquery.tmpl.js"></script>
 <script src="js/easytemplate.js"></script>
+<script src="js/handlebars-v1.3.0.js"></script>
 
 <script>
 //生成测试案例list 
-function renderTestCaseList(caseSwitcher, joinChar, n, times, data){	
-	var _testCaseList={
+function renderTestCaseList(caseSwitcher, joinChar, times, data){	
+	var allTestCaseList={
 		mTpl : {
 			name: 'mTpl',
 			tester: function () {
-				var source = document.getElementById('mTpl').innerHTML;
+				var source = document.getElementById('tpl-1').innerHTML;
 				var s='';
 				for (var i = 0; i < times; i++) {
-					s = mTpl(source, data);				
+					s = mTpl({
+						str 	: source,
+						data 	: data,
+						isCache	: false,
+						
+						//isEncode 			: false,
+						isKeepRN 			: true,
+						htmlCommentCode 	: 1						
+					});				
 				} 
 				return s;
 			}
 		},
 
+		txTpl : {
+			name: 'txTpl',
+			tester: function () {
+				var source = document.getElementById('tpl-1').innerHTML;
+				var s='';
+				for (var i = 0; i < times; i++) {
+					s = txTpl(source, data, '', '', false);				
+				} 
+				return s;
+			}
+		},
 		ejs : {
 			name: 'ejs',
 			tester: function () {
-				var source = document.getElementById('ejs').innerHTML;
-				var tpl = new EJS({text:source,type:"<"}); 
+				var source = document.getElementById('tpl-1').innerHTML;
 				var s='';
 				for (var i = 0; i < times; i++) {
-					s = tpl.render(data);
+					s = new EJS({
+						text:source,
+						type:"<",
+						cache : false
+					}).render(data);
 				}
+
 				return s;
 			}
 		},
@@ -55,22 +83,10 @@ function renderTestCaseList(caseSwitcher, joinChar, n, times, data){
 		tmpl : {
 			name: 'tmpl',
 			tester: function () {
-				var source = document.getElementById('tmpl').innerHTML;
+				var source = document.getElementById('tpl-1').innerHTML;
 				var s='';
 				for (var i = 0; i < times; i++) {
 					s = tmpl(source, data);
-				}
-				return s;
-			}
-		},
-
-		Mustache : {
-			name: 'Mustache',
-			tester: function () {
-				var source = document.getElementById('Mustache').innerHTML;
-				var s='';
-				for (var i = 0; i < times; i++) {
-					s = Mustache.to_html(source, data);
 				}
 				return s;
 			}
@@ -80,10 +96,9 @@ function renderTestCaseList(caseSwitcher, joinChar, n, times, data){
 			name: 'doT',
 			tester: function () {
 				var source = document.getElementById('doT').innerHTML;
-				var doTtmpl = doT.template(source);
 				var s='';
 				for (var i = 0; i < times; i++) {
-					s = doTtmpl(data);
+					s = doT.template(source)(data);
 				}
 				return s;
 			}
@@ -106,35 +121,45 @@ function renderTestCaseList(caseSwitcher, joinChar, n, times, data){
 		artTemplate : {
 			name: 'artTemplate',
 			tester: function () {
-				var source = document.getElementById('artTemplate').innerHTML;
-				var fn = template.compile(source);
+				var source = document.getElementById('tpl-1').innerHTML;
 				var s='';
 				for (var i = 0; i < times; i++) {
-					s=fn(data);
+					s=template.compile(source)(data);
 				}
 				return s;
 			}
 		},
 
-		baiduTemplate : {
-			name: 'baiduTemplate',
+		Mustache : {
+			name: 'Mustache',
 			tester: function () {
-				var bt=baidu.template;
+				var source = document.getElementById('Mustache').innerHTML;
 				var s='';
 				for (var i = 0; i < times; i++) {
-					s=bt('baidu-template', data);
+					s = Mustache.to_html(source, data);
 				}
 				return s;
 			}
 		},
-		
-		jqueryTmpl : { // jqueryTmpl 太慢，可能导致浏览器停止响应
-			name: 'jqueryTmpl',
+
+	    Handlebars : {
+	        name: 'Handlebars',
+	        tester: function () {
+	            var source = document.getElementById('Handlebars').innerHTML;
+	            var s='';
+	            for (var i = 0; i < times; i++) {
+	                s = Handlebars.compile(source)(data);
+	            }
+	            return s;
+	        }
+	    },
+
+		baiduTemplate : {
+			name: 'baiduTemplate',
 			tester: function () {
-				var source = document.getElementById("jqueryTmpl").innerHTML;
 				var s='';
 				for (var i = 0; i < times; i++) {
-					s=$.tmpl(source, data);
+					s=baidu.template('baidu-template', data);
 				}
 				return s;
 			}
@@ -144,27 +169,36 @@ function renderTestCaseList(caseSwitcher, joinChar, n, times, data){
 			name: 'easyTemplate',
 			tester: function () {
 				var source = document.getElementById('easyTemplate').innerHTML;
-				var fn = easyTemplate(source);
 				var s='';
 				for (var i = 0; i < times; i++) {
-					// easyTemplate 渲染方法被重写到 toString(), 需要取值操作才会运行
-				   s=fn(data) + '';
+				   	var fn = easyTemplate(source);
+				   	s=fn(data) + '';
+				}
+				return s;
+			}
+		},		
+		
+		jqueryTmpl : { //jqueryTmpl 太慢，可能导致浏览器停止响应
+			name: 'jqueryTmpl',
+			tester: function () {
+				var source = document.getElementById("jqueryTmpl").innerHTML;
+				var s='';
+				for (var i = 0; i < times; i++) {
+					s=$.tmpl(source, data);
 				}
 				return s;
 			}
 		}		
-		
 	};
 
 	KISSY.use('template',function(S,T) {
-		_testCaseList.kissyTemplate = {
+		allTestCaseList.kissyTemplate = {
 			name: 'kissyTemplate',
 			tester: function () {
 				var source= document.getElementById('kissy').innerHTML;
-				var tpl=T(source);
 				var s='';
 				for (var i = 0; i < times; i++) {
-					s=tpl.render(data);
+					s=T(source).render(data);
 				}
 				return s;
 			}
@@ -173,44 +207,15 @@ function renderTestCaseList(caseSwitcher, joinChar, n, times, data){
 	
 	var testCaseList=[], arr=caseSwitcher.split(joinChar);
 	for(var i=0, len=arr.length; i<len;i++){
-		testCaseList.push(_testCaseList[arr[i].trim()]);		
+		testCaseList.push(allTestCaseList[arr[i].trim()]);		
 	}
 
 	return testCaseList;
 }
 
-//测试函数
-function testFunc(trigger) { 
-	if($(trigger).attr('disabled')){return;}
-	$(trigger).attr('disabled','true');
-
-	// 测试案例开关:  mTpl, tmpl, ejs,  Mustache, juicer, doT, artTemplate, baiduTemplate, kissyTemplate, easyTemplate, jqueryTmpl
-	var caseSwitcher =$('.box input').eq(2).val().trim() || 'mTpl, tmpl, ejs'; 
-	var n=parseInt($('.box input').eq(0).val())|| 10000; // 数据量条数
-	var times=parseInt($('.box input').eq(1).val())|| 1;	// 渲染次数 		
-	var data = (function(){ //数据json 每条数据显示的字段数为3个
-		var arr=[];
-		for (var i = 0, len=n; i < len; i++) {
-			arr.push({index : i, name: 'john', age : 30 });	   
-		}
-		return {list: arr};
-	})();
-
-	caseSwitcher=caseSwitcher.charAt(0)!=','?caseSwitcher:caseSwitcher.slice(1).trim();
-	caseSwitcher=caseSwitcher.slice(-1)!=','?caseSwitcher:caseSwitcher.slice(0,caseSwitcher.length-1).trim();
-
-	var testCaseList = renderTestCaseList(caseSwitcher, ',', n, times, data);  
-	
-    var colors = Highcharts.getOptions().colors;
-	colors=colors.concat(colors,colors,colors,colors,colors); //颜色数组
-	
-    var categories = [];
-
-    for (var i = 0; i < testCaseList.length; i++) {
-        categories.push(testCaseList[i].name);
-    }
-
-    var chart = new Highcharts.Chart({
+//画图
+function getChart(categories, n, times){
+    return new Highcharts.Chart({
         chart: {
             renderTo: 'container',
             height: categories.length * 30 +100,
@@ -222,7 +227,7 @@ function testFunc(trigger) {
         },
 
         subtitle: {
-            text: n + ' 条数据 × ' + times + ' 次渲染'
+            text: n + ' 条数据 × ' + times + ' 个模板片段'
         },
                 
         xAxis: {
@@ -272,10 +277,44 @@ function testFunc(trigger) {
             data : []
         }]
     });
-    
-	oMessage = document.getElementById('message');
+}
+
+//测试函数
+function testFunc(trigger) { 
+	var trigger = trigger || this;
+	if($(trigger).attr('disabled')){return;}
+	$(trigger).attr('disabled','true');
+
+	// 测试案例开关:  mTpl, txTpl, tmpl, ejs,  Mustache, juicer, doT, artTemplate, baiduTemplate, kissyTemplate, easyTemplate, jqueryTmpl
+	var caseSwitcher =$('.box input').eq(2).val().trim() || 'mTpl, tmpl, ejs'; 
+	var n=Number($('.box input').eq(0).val()) * 10000|| 10 * 10000; // 数据量条数
+	var times=parseInt($('.box input').eq(1).val())|| 1;	// 渲染次数 		
+	var data = (function(){ //数据json 每条数据显示的字段数为3个
+		var arr=[];
+		for (var i = 0, len=n; i < len; i++) {
+			arr.push({index : i, name: 'john', age : 30 });	   
+		}
+		return {list: arr};
+	})();
+
+	caseSwitcher=caseSwitcher.charAt(0)!=','?caseSwitcher:caseSwitcher.slice(1).trim();
+	caseSwitcher=caseSwitcher.slice(-1)!=','?caseSwitcher:caseSwitcher.slice(0,caseSwitcher.length-1).trim();
+
+	var testCaseList = renderTestCaseList(caseSwitcher, ',', times, data);  
 	
-    (function () { 
+    var colors = Highcharts.getOptions().colors;
+	colors=colors.concat(colors,colors,colors,colors,colors); //颜色数组
+	
+    var categories = [];
+    for (var i = 0; i < testCaseList.length; i++) {
+        categories.push(testCaseList[i].name);
+    }
+
+    var chart = getChart(categories, n, times);
+
+	oMessage = document.getElementById('message');
+
+    (function () {//递归函数    	
         if (!testCaseList.length) {
 			$('#button-test').removeAttr('disabled');
 			oMessage.innerHTML='测试已完成';
@@ -287,46 +326,29 @@ function testFunc(trigger) {
 		
         var startTime = Date.now();
         var s=currentCase.tester();
-        //console.log(currentCase.name + ': '+ s);
+        //console.log(currentCase.name); console.log(s);
         var endTime = Date.now();
-		
+
         chart.series[0].addPoint({ color: colors.shift(),  y: endTime-startTime });
 		
         setTimeout(function () {
             t();
-        }, 2000);      
+        }, 1000);    
     })();
 }
+
+$(document).delegate('#button-test', 'click',testFunc);
 </script>
 </head>
 
 <body>
 
 <div id="template-box">
-	<!-- mTpl 的模板 -->
-	<script id="mTpl" type="text/tmpl">
+	<!-- mTpl、tmpl、ejs、artTemplate、的模板 -->
+	<script id="tpl-1" type="text/tmpl">
 	<ul>
 		<% for (i = 0, l = list.length; i < l; i++) { %>
-			<li><%=list[i].index%>姓名: <%=list[i].name%> 年龄：<%=list[i].age%></li>
-		<% } %>
-	</ul>
-	</script>
-
-
-	<!-- tmpl 的模板 -->
-	<script id="tmpl" type="text/tmpl">
-	<ul>
-		<% for (i = 0, l = list.length; i < l; i++) { %>
-			<li><%=list[i].index%>姓名: <%=list[i].name%> 年龄：<%=list[i].age%></li>
-		<% } %>
-	</ul>
-	</script>
-
-	<!-- ejs 的模板 -->
-	<script id="ejs" type="text/tmpl">
-	<ul>
-		<% for (i = 0, l = list.length; i < l; i++) { %>
-			<li><%=list[i].index%>姓名: <%=list[i].name%> 年龄：<%=list[i].age%></li>
+			<li>序号：<%=list[i].index%> 姓名：<%=list[i].name%> 年龄：<%=list[i].age%></li>
 		<% } %>
 	</ul>
 	</script>
@@ -335,7 +357,7 @@ function testFunc(trigger) {
 	<script id="juicer" type="text/tmpl">
 	<ul>
 		{@each list as val}
-			<li>$${val.index}. 用户: $${val.name}/ 网站：$${val.age}</li>
+			<li>序号：$${val.index} 姓名：$${val.name} 年龄：$${val.age}</li>
 		{@/each}
 	</ul>
 	</script>
@@ -345,17 +367,8 @@ function testFunc(trigger) {
 	<ul>
 		{{ for (var val, i = 0, l = it.list.length; i < l; i++) { }}
 			{{ val = it.list; }}
-			<li>{{=val[i].index}}. 用户: {{=val[i].name}}/ 网站：{{=val[i].age}}</li>
+			<li>序号：{{=val[i].index}} 姓名：{{=val[i].name}} 年龄：{{=val[i].age}}</li>
 		{{ } }}
-	</ul>
-	</script>
-
-	<!-- artTemplate 的模板 -->
-	<script id="artTemplate" type="text/tmpl">
-	<ul>
-		<% for (i = 0, l = list.length; i < l; i++) { %>
-			<li><%=list[i].index%>. 用户: <%=list[i].name%>/ 网站：<%=list[i].age%></li>
-		<% } %>
 	</ul>
 	</script>
 	
@@ -363,7 +376,7 @@ function testFunc(trigger) {
 	<script id="Mustache" type="text/tmpl">
 	<ul>
 		{{#list}}
-			<li>{{{index}}}. 用户: {{{user}}}/ 网站：{{{site}}}</li>
+			<li>序号：{{{index}}} 姓名：{{{name}}} 年龄：{{{age}}}</li>
 		{{/list}}
 	</ul>
 	</script>
@@ -372,7 +385,7 @@ function testFunc(trigger) {
 	<script id="Handlebars" type="text/tmpl">
 	<ul>
 		{{#list}}
-			<li>{{{index}}}. 用户: {{{user}}}/ 网站：{{{site}}}</li>
+			<li>序号：{{{index}}} 姓名：{{{name}}} 年龄：{{{age}}}</li>
 		{{/list}}
 	</ul>
 	</script>
@@ -382,7 +395,7 @@ function testFunc(trigger) {
 	<ul>
 		<% for (var val, i = 0, l = list.length; i < l; i++) { %>
 			<% val = list[i]; %>
-			<li><%:=val.index%>. 用户: <%:=val.name%>/ 网站：<%:=val.age%></li>
+			<li>序号：<%:=val.index%> 姓名：<%:=val.name%> 年龄：<%:=val.age%></li>
 		<% } %>
 	</ul>
 	</script>
@@ -391,7 +404,7 @@ function testFunc(trigger) {
 	<script id="kissy" type="text/tmpl">
 	<ul>
 		{{#each list as val}}
-			<li>{{val.index}}. 用户: {{val.name}}/ 网站：{{val.age}}</li>
+			<li>序号：{{val.index}} 姓名：{{val.name}} 年龄：{{val.age}}</li>
 		{{/each}}
 	</ul>
 	</script>
@@ -409,27 +422,28 @@ function testFunc(trigger) {
 	<script id="jqueryTmpl" type="text/tmpl">
 	<ul>
 		{{each list}}
-			<li>${$value.index}. 用户: ${$value.name}/ 网站：${$value.age}</li>
+			<li>序号：${$value.index} 姓名: ${$value.name} 年龄：${$value.age}</li>
 		{{/each}}
 	</ul>
 	</script>
 </div>
 
-<h1>JavaScript模板引擎速度比较</h1>
-<p><strong>1</strong> 条单元数据 {index : 0, name: 'bobo', age : 28 } 每条数据有 <strong>3</strong> 个字段</p>
-<p><strong>(注意不要把下面的数字一下设置得过高，有的模板解析器会令浏览器崩掉，如:jqueryTmpl)</strong></p>
+<div class="wrap">
+	<h1>JavaScript模板引擎速度比较</h1>	
+	<p><strong>(注意不要把下面的数字一下设置得过高，有的模板解析器会令浏览器崩掉，如:jqueryTmpl)</strong></p>
+	<div class="box">
+		<p> 数据格式：<strong>1</strong> 条单元数据 {index : 0, name: 'bobo', age : 28 } 每条数据有 <strong>3</strong> 个字段</p>
+		<p> 数据条数：<input type="text" value="10" />(万)</p>
+		<p> 模板数量：<input type="text" value="1" />(个)</p>
+		<p> 测试案例：<input class="case" type="text" value="mTpl, txTpl, tmpl, ejs" /> </p>
+		<p>(用逗号隔开，可选测试案例：mTpl, mTpl2, txTpl, doT, Handlebars, artTemplate, juicer, Mustache, tmpl, easyTemplate, ejs, baiduTemplate, kissyTemplate, jqueryTmpl)</p>
+	</div>
 
-<div class="box">
-	<p> 数据条数:<input type="text" value="10000" />  </p>
-	<p> 渲染次数:<input type="text" value="1" /> </p>
-	<p> 测试案例:<input type="text" value="mTpl, juicer, doT, artTemplate" style="width:620px;" /> </p>
-	<p>(用逗号隔开，可选测试案例：mTpl, tmpl, ejs,  Mustache, juicer, doT, artTemplate, baiduTemplate, kissyTemplate, easyTemplate, jqueryTmpl)</p>
+	<p>
+		<button id="button-test" style="padding: 5px;">开始测试</button>
+		<span id="message" style="font-size:12px"></span>
+	</p>
+	<div id="container" style="min-width: 400px; margin: 0 auto"></div>
 </div>
-
-<p>
-	<button id="button-test" onclick="testFunc(this)" style="padding: 5px;">开始测试</button>
-	<span id="message" style="font-size:12px"></span>
-</p>
-<div id="container" style="min-width: 400px; margin: 0 auto"></div>
 </body>
 </html>
