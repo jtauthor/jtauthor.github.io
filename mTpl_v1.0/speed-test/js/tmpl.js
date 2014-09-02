@@ -3,11 +3,11 @@
   var cache = {};
 
   this.tmpl =  function (str, data){
-	var fn = !/\W/.test(str) ?
-	  cache[str] = //cache[str] ||
-		tmpl(document.getElementById(str).innerHTML) :
+/*	var fn = !/\W/.test(str) ?
+	  cache[str] = cache[str] ||
+		tmpl(document.getElementById(str).innerHTML) :*/
 
-	  new Function("obj",
+	 var fn = new Function("obj",
 		"var p=[],print=function(){p.push.apply(p,arguments);};" +
 		"with(obj){p.push('" +
 
@@ -21,7 +21,7 @@
 		  .split("\r").join("\\'")
 	  + "');}return p.join('');");
 
-	return data ? fn( data ) : fn;
+	return fn(data);//data ? fn( data ) : fn;
   };
 })();
 
