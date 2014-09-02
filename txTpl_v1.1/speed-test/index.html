@@ -25,11 +25,12 @@
 <script src="js/baidu.template.js"></script>
 <script src="js/jquery.tmpl.js"></script>
 <script src="js/easytemplate.js"></script>
+<script src="js/handlebars-v1.3.0.js"></script>
 
 <script>
 //生成测试案例list 
-function renderTestCaseList(caseSwitcher, joinChar, n, times, data){	
-	var _testCaseList={
+function renderTestCaseList(caseSwitcher, joinChar, times, data){	
+	var allTestCaseList={
 		txTpl : {
 			name: 'txTpl',
 			tester: function () {
@@ -169,12 +170,11 @@ function renderTestCaseList(caseSwitcher, joinChar, n, times, data){
 				}
 				return s;
 			}
-		}		
-		
+		}				
 	};
 
 	KISSY.use('template',function(S,T) {
-		_testCaseList.kissyTemplate = {
+		allTestCaseList.kissyTemplate = {
 			name: 'kissyTemplate',
 			tester: function () {
 				var source= document.getElementById('kissy').innerHTML;
@@ -190,44 +190,15 @@ function renderTestCaseList(caseSwitcher, joinChar, n, times, data){
 	
 	var testCaseList=[], arr=caseSwitcher.split(joinChar);
 	for(var i=0, len=arr.length; i<len;i++){
-		testCaseList.push(_testCaseList[arr[i].trim()]);		
+		testCaseList.push(allTestCaseList[arr[i].trim()]);		
 	}
 
 	return testCaseList;
 }
 
-//测试函数
-function testFunc(trigger) { 
-	if($(trigger).attr('disabled')){return;}
-	$(trigger).attr('disabled','true');
-
-	// 测试案例开关:  mTpl, tmpl, ejs,  Mustache, juicer, doT, artTemplate, baiduTemplate, kissyTemplate, easyTemplate, jqueryTmpl
-	var caseSwitcher =$('.box input').eq(2).val().trim() || 'mTpl, tmpl, ejs'; 
-	var n=parseInt($('.box input').eq(0).val())|| 10000; // 数据量条数
-	var times=parseInt($('.box input').eq(1).val())|| 1;	// 渲染次数 		
-	var data = (function(){ //数据json 每条数据显示的字段数为3个
-		var arr=[];
-		for (var i = 0, len=n; i < len; i++) {
-			arr.push({index : i, name: 'john', age : 30 });	   
-		}
-		return {list: arr};
-	})();
-
-	caseSwitcher=caseSwitcher.charAt(0)!=','?caseSwitcher:caseSwitcher.slice(1).trim();
-	caseSwitcher=caseSwitcher.slice(-1)!=','?caseSwitcher:caseSwitcher.slice(0,caseSwitcher.length-1).trim();
-
-	var testCaseList = renderTestCaseList(caseSwitcher, ',', n, times, data);  
-	
-    var colors = Highcharts.getOptions().colors;
-	colors=colors.concat(colors,colors,colors,colors,colors); //颜色数组
-	
-    var categories = [];
-
-    for (var i = 0; i < testCaseList.length; i++) {
-        categories.push(testCaseList[i].name);
-    }
-
-    var chart = new Highcharts.Chart({
+//画图
+function getChart(categories, n, times){
+    return new Highcharts.Chart({
         chart: {
             renderTo: 'container',
             height: categories.length * 30 +100,
@@ -289,10 +260,44 @@ function testFunc(trigger) {
             data : []
         }]
     });
-    
-	oMessage = document.getElementById('message');
+}
+
+//测试函数
+function testFunc(trigger) { 
+	var trigger = trigger || this;
+	if($(trigger).attr('disabled')){return;}
+	$(trigger).attr('disabled','true');
+
+	// 测试案例开关:  mTpl, txTpl, tmpl, ejs,  Mustache, juicer, doT, artTemplate, baiduTemplate, kissyTemplate, easyTemplate, jqueryTmpl
+	var caseSwitcher =$('.box input').eq(2).val().trim() || 'mTpl, tmpl, ejs'; 
+	var n=Number($('.box input').eq(0).val()) * 10000|| 10 * 10000; // 数据量条数
+	var times=parseInt($('.box input').eq(1).val())|| 1;	// 渲染次数 		
+	var data = (function(){ //数据json 每条数据显示的字段数为3个
+		var arr=[];
+		for (var i = 0, len=n; i < len; i++) {
+			arr.push({index : i, name: 'john', age : 30 });	   
+		}
+		return {list: arr};
+	})();
+
+	caseSwitcher=caseSwitcher.charAt(0)!=','?caseSwitcher:caseSwitcher.slice(1).trim();
+	caseSwitcher=caseSwitcher.slice(-1)!=','?caseSwitcher:caseSwitcher.slice(0,caseSwitcher.length-1).trim();
+
+	var testCaseList = renderTestCaseList(caseSwitcher, ',', times, data);  
 	
-    (function () { 
+    var colors = Highcharts.getOptions().colors;
+	colors=colors.concat(colors,colors,colors,colors,colors); //颜色数组
+	
+    var categories = [];
+    for (var i = 0; i < testCaseList.length; i++) {
+        categories.push(testCaseList[i].name);
+    }
+
+    var chart = getChart(categories, n, times);
+
+	oMessage = document.getElementById('message');
+
+    (function () {//递归函数    	
         if (!testCaseList.length) {
 			$('#button-test').removeAttr('disabled');
 			oMessage.innerHTML='测试已完成';
@@ -304,16 +309,18 @@ function testFunc(trigger) {
 		
         var startTime = Date.now();
         var s=currentCase.tester();
-        //console.log(currentCase.name + ': '+ s);
+        //console.log(currentCase.name); console.log(s);
         var endTime = Date.now();
-		
+
         chart.series[0].addPoint({ color: colors.shift(),  y: endTime-startTime });
 		
         setTimeout(function () {
             t();
-        }, 2000);      
+        }, 1000);    
     })();
 }
+
+$(document).delegate('#button-test', 'click',testFunc);
 </script>
 </head>
 
