@@ -46,7 +46,10 @@ function renderTestCaseList(caseSwitcher, joinChar, n, times, data){
 				var source = document.getElementById('mTpl').innerHTML;
 				var s='';
 				for (var i = 0; i < times; i++) {
-					s = mTpl(source, data);				
+					s = mTpl({
+						str 	: source,
+						data 	: data			
+					});				
 				} 
 				return s;
 			}
@@ -160,7 +163,6 @@ function renderTestCaseList(caseSwitcher, joinChar, n, times, data){
 				var fn = easyTemplate(source);
 				var s='';
 				for (var i = 0; i < times; i++) {
-					// easyTemplate 渲染方法被重写到 toString(), 需要取值操作才会运行
 				   s=fn(data) + '';
 				}
 				return s;
@@ -445,8 +447,8 @@ function testFunc(trigger) {
 <div class="box">
 	<p> 数据条数:<input type="text" value="10000" />  </p>
 	<p> 渲染次数:<input type="text" value="1" /> </p>
-	<p> 测试案例:<input type="text" value="txTpl, tmpl, ejs" style="width:620px;" /> </p>
-	<p>(用逗号隔开，可选测试案例：txTpl, tmpl, ejs,  Mustache, juicer, doT, artTemplate, baiduTemplate, kissyTemplate, easyTemplate, jqueryTmpl)</p>
+	<p> 测试案例:<input type="text" value="txTpl, mTpl, tmpl, ejs" style="width:620px;" /> </p>
+	<p>(用逗号隔开，可选测试案例：txTpl, mTpl, tmpl, ejs,  Mustache, juicer, doT, artTemplate, baiduTemplate, kissyTemplate, easyTemplate, jqueryTmpl)</p>
 </div>
 
 <p>

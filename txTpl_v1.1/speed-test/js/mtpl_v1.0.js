@@ -1,152 +1,155 @@
 
-/*
-
-	简介：
-		mTpl是一个JavaScript的极速微模板解析引擎，速度遥遥领先，代码简短，使用非常简单，兼容性好，可以输出各种字符，支持调试，注释，作用域，xss过滤，原格式输出等。
-	
-	特点：
-		1、极速的运行效率
-		2、强大兼容性
-		3、无限制的语法支持(if/for/wihle/...)
-		4、微体积
-		5、作用域设定
-		6、调试功能
-		7、xss过滤
-		8、注释功能
-		9、输出源码书写格式功能
-		
-	极速微模板解析引擎mTpl，你值得拥有！
-	
-*/ 
-
-/**
- * 极速微模板解析引擎mTpl v1.0: 
- * call method: mTpl(str, data, startSelector, endSelector, isCache);
- * @author: fengzhen wang
- * @param {String}  模板id || 模板text
- * @param {Object}  数据源json 
- * @param {String}  可选 要匹配的开始选择符 '<%' 、'[%' 、'<#' ..., 默认为'<%'
- * @param {String}  可选 要匹配的结束选择符 '%>' 、'%]' 、'#>' ..., 默认为'%>'
- * @param {Boolean} 可选 默认为true 
- * @return {String}	 
- * @notice & other 
- *		1、	输出"开始选择符"或"结束选择符"时, 至少其中一个字符要转成实体字符, 
- *			如可以写成<&#37; &#37;>, 输出其它字符不需要转义, 注释里面的字符不受此约束。  
- *		2、	"#"的实体"&#35;", "%"的实体"&#37;", 更多html实体对照表: 
- *			http://www.f2e.org/utils/html_entities.html
- *		3、	数据源尽量不要有太多的冗余数据。 
- *		4、	实例demo和测速demo: http://f2e.org/jt/mtpl
- */
 (function(){
-	var cache={}; 
+    "use strict";
 
-	function mTpl(str, data, startSelector, endSelector, isCache){
-		var t 			= this, 
-			d 			= data, 
-			el			= document.getElementById(str),
-			tpl			= el ? el.innerHTML : str,				
-			isCache 	= isCache != undefined ? isCache : true,
-			valueArr	= [], 			
-			fn 			= function(){},	
-			htmlEncode 	= function(s){return s;
-				return s
-					.split('&').join('&amp;')
-					.split('>').join('&gt;')
-					.split('<').join('&lt;')
-					.split('"').join('&quot;')
-					.split("'").join('&#39;')
+    var cache={}; 
 
-					// .replace(/&/g,'&amp;')
-					// .replace(/>/g,'&gt;')
-					// .replace(/</g,'&lt;')
-					// .replace(/"/g,'&quot;')
-					// .replace(/'/g,'&#39;');
-			},
-			compileFn	= function(args, strFormatTpl){
-				//return "var p=[]; \np.push(\n    '" + strFormatTpl + "'\n);\nreturn p.join('')";
-				return new Function(
-					propArr, 
-					"var p=[]; \np.push(\n    '" + strFormatTpl + "'\n);\nreturn p.join('')"
-					);
-			},			
-			resetChar 	= function(c, str){
-				var a=c, f=function(s){ 
-					if(str.indexOf(s) >-1){
-						return f(s+a);
-					}
-					return s;
-				};				
-				return f(a);
-			},
-			recoverChar = function(s){
-				return s
-					.replace(new RegExp(r,'g'),'\r')
-					.replace(new RegExp(n,'g'),'\n')
-					.replace(/mTpl_comment\d+;/g, function(l){
-						var i=l.slice(12, l.length-1);
-						return mTpl_comment[i];
-					});
-			},
-			mTpl_comment= { length : 0 },
-			l 			= resetChar('L', tpl),
-			r 			= resetChar('R', tpl),
-			n			= resetChar('N', tpl);
-	
-		if(isCache && cache[str]){
-			for (var i=0, list=cache[str].propList, len=list.length; i<len; i++){
-				valueArr.push(d[list[i]]);
-			}	
-			fn=cache[str].parsefn;
-		}else{			
-			var a = startSelector, b = endSelector;				
-			if(!tpl){return ''}
-			if(!a || !b){a = '<' + '%'; b = '%' + '>';}				
-			if(!(tpl.indexOf(a) > -1 && tpl.indexOf(b) > -1)){return tpl}
-			
-			var formatTpl = function(str, isError){
-				var N=isError? '\n' : '';
-				r=isError? '' : r;
-				n=isError? '' : n;
+    var T = {
+        htmlEncode : function(s){
+            return s
+                .split('&').join('&amp;')
+                .split('>').join('&gt;')
+                .split('<').join('&lt;')
+                .split('"').join('&quot;')
+                .split("'").join('&#39;');
+        },
 
-				var	eb 	= (function(s){return s.replace(/([.*+?^=!:${}()|[\]\/\\])/g, '\\$1')})(b),
-					reg	= new RegExp(l+'(?:(?!'+ eb +')[\\s\\S])*'+ eb +'|(\'+)', 'g');		
+        setChar : function(c, str){
+            var a='mTpl_' + c + '_mTpl', 
+                f=function(s){ 
+                    if(str.indexOf(s) >-1){
+                        return f(s+a);
+                    }
+                    return s;
+                };	
+            return f(a);
+        },
 
-				return tpl
-					//.replace(/<!--(?:(?!-->)[\s\S])*-->/g, '')
-					//.split('\\').join('\\\\')
-					.replace(/[\r]/g, r)
-					.replace(/[\n]/g, n)
-					.split(a).join(l)
-					.replace(reg, function(l,$1){return $1 ? new Array($1.length + 1).join('\r') : l})
-					//.replace(new RegExp(l+'=(.*?)'+b,'g'), "',\n    $1,\n    '")
-					.replace(new RegExp(l+'=(.*?)'+b,'g'), "',\n    $1,\n    '")
-					.split(l).join("');"+N)		
-					.split(b).join("p.push('")	
-					.split('\r').join('\\\'');
-			};
+        recoverChar : function(s, r, n, isKeepRN, isKeepCommentRN, htmlCommentCode, commentObj){
+            s = !isKeepRN ? s : s
+                    .replace(new RegExp(r,'g'),'\r')
+                    .replace(new RegExp(n,'g'),'\n');
+            s = htmlCommentCode !=1 ? s : s
+                    .replace(/mTpl_comment\d+;/g, function(l){
+                        var i=l.slice(12, l.length-1);
+                        return commentObj[i];
+                    });
 
-			var p, propArr = [];
-			for (p in d){ 
-				//console.log(p);
-				propArr.push(p);
-				valueArr.push(d[p]);
-			}
-//console.log(formatTpl(str));
-			fn = compileFn(propArr, formatTpl(str));
-			isCache && (cache[str] = {parsefn : fn, propList : propArr});
-		}
-	//console.log(fn);	
-		var s;
-		
-		try{
-			s = fn.apply(t, valueArr);
-		}catch(e){
-			fn = compileFn(propArr, formatTpl(str,true));
-			s = fn.apply(t, valueArr);
-		}
-		
-		return recoverChar(s);	
-	} 
-	
-	typeof exports != 'undefined' ? exports.mTpl = mTpl : window.mTpl = mTpl;
+            s = htmlCommentCode !=1 || !isKeepCommentRN ? s : s
+                    .replace(/<!--(?:(?!-->)[\s\S])*-->/g, function(l){
+                        return l
+                            .replace(new RegExp(r,'g'),'\r')
+                            .replace(new RegExp(n,'g'),'\n');
+                    });
+
+            return s;
+        },
+
+        encodeChar : function(s){
+            return s.replace(/([.*+?^=!:${}()|[\]\/\\])/g, '\\$1')
+        },
+
+        getReg_rangeOutChar : function (l, r, c){
+            r = this.encodeChar(r);
+            return new RegExp(l+'(?:(?!'+ r +')[\\s\\S])*'+ r +'|('+ c +'+)', 'g'); 
+        }, 
+
+        formatTpl : function(tpl, r, n, startSelector, endSelector, htmlCommentCode, commentObj, isKeepRN, isEncode, isError){
+            var a = startSelector, b = endSelector;	
+            if( !(tpl && a && b) ) {return ''} 	
+            if(!(tpl.indexOf(a) > -1 && tpl.indexOf(b) > -1)){return tpl}
+
+            var lineBr  = isError? '\n' : '', 
+                left    = this.setChar('L', tpl), 
+                reg     = T.getReg_rangeOutChar(left, b, "'");	
+
+            tpl = isError || !isKeepRN ? tpl.replace(/[\r\n]/g, ' ') : tpl
+                    .replace(/\r/g, r) 
+                    .replace(/\n/g, n);
+
+            tpl = htmlCommentCode==0 ? tpl : 
+                    htmlCommentCode==2 ? tpl.replace(/<!--(?:(?!-->)[\s\S])*-->/g, '') : tpl	
+                        .replace(/<!--(?:(?!-->)[\s\S])*-->/g, function(l){					
+                            var i=commentObj.length++;
+                            commentObj[i]=l;
+                            return 'mTpl_comment'+i+';';
+                        });
+
+            return tpl 
+                .split('\\').join('\\\\')
+                .split(a).join(left)
+                .replace(reg, function(l,$1){return $1 ? new Array($1.length + 1).join('\r') : l})
+                .replace(new RegExp(left+'=(.*?)'+b,'g'), "';"+lineBr+" s+=" + (isEncode ? "mTpl_htmlEncode(String($1))" : "String($1)") + ";"+lineBr+" s+='")
+                .split(left).join("';"+lineBr) 
+                .split(b).join(lineBr+' s+=\'')
+                .split('\r').join('\\\'');
+        },
+
+        compileFn : function(args, strFormatTpl, isEncode){
+            return new Function(args, 
+                    (isEncode ? "var mTpl_htmlEncode="+ this.htmlEncode.toString() + ';\n ' : '')+
+                    "var s='';\n s+='" + strFormatTpl + "';\n return s");
+        }
+    };
+
+    function mTpl(opt){
+        var str             = opt.str,	
+            data            = opt.data,	
+            startSelector   = opt.startSelector || '<' + '%',
+            endSelector     = opt.endSelector || '%' + '>', 
+            isCache         = opt.isCache != undefined ? opt.isCache : true, 
+
+            scope           = opt.scope || this, 
+            isEncode        = opt.isEncode || false,
+            isKeepRN        = opt.isKeepRN || false, 
+            isKeepCommentRN = opt.isKeepCommentRN || true,
+            htmlCommentCode = opt.htmlCommentCode != undefined ? opt.htmlCommentCode : 1, 
+
+            tpl         = document.getElementById(str) ? document.getElementById(str).innerHTML : str,
+            valueArr    = [], 
+            commentObj  = { length : 0 }, 
+            fn          = null,
+            r           = T.setChar('R', tpl),
+            n           = T.setChar('N', tpl);
+
+        if(isCache && cache[str]){
+            for (var i=0, list=cache[str].propList, len=list.length; i<len; i++){
+                valueArr.push(data[list[i]]);
+            }
+            fn=cache[str].parsefn;
+        }else{
+            var p, propArr = [];
+            for (p in data){ 
+                propArr.push(p);
+                valueArr.push(data[p]);
+            }
+
+            fn = T.compileFn(
+                propArr, 
+                T.formatTpl(tpl, r, n, startSelector, endSelector, htmlCommentCode, commentObj, isKeepRN, isEncode), 
+                isEncode
+            );
+
+            isCache && (cache[str] = {parsefn : fn, propList : propArr});
+        }
+
+        var s;
+
+        try{
+            s = fn.apply(scope, valueArr);
+        }catch(e){
+            fn = T.compileFn(
+                propArr, 
+                T.formatTpl(tpl, r, n, startSelector, endSelector, htmlCommentCode, commentObj, isKeepRN, isEncode, true), 
+                isEncode
+            );
+
+            s = fn.apply(scope, valueArr);
+        }
+
+        return T.recoverChar(s, r, n, isKeepRN, isKeepCommentRN, htmlCommentCode, commentObj);	
+    } 
+    
+    typeof exports != 'undefined' ? exports.mTpl = mTpl : window.mTpl = mTpl;
 })();
+
