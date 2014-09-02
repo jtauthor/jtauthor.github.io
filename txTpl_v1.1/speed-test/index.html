@@ -4,8 +4,10 @@
 <meta charset="utf-8" />
 <title>template speed test</title>
 <style>
-.box p{margin:0;}
+.wrap{padding: 0 10px;}
+.box p{margin:8px 0 0;}
 .box input{width:100px;}
+.box input.case{width:90%;}
 .box span{color:#333;}
 </style>
 <script src="js/jquery-1.7.2.min.js"></script>
@@ -440,21 +442,23 @@ function testFunc(trigger) {
 	</script>
 </div>
 
-<h1>JavaScript模板引擎速度比较</h1>
-<p><strong>1</strong> 条单元数据 {index : 0, name: 'bobo', age : 28 } 每条数据有 <strong>3</strong> 个字段</p>
-<p><strong>(注意不要把下面的数字一下设置得过高，有的模板解析器会令浏览器崩掉，如:jqueryTmpl)</strong></p>
+<div class="wrap">
+	<h1>JavaScript模板引擎速度比较</h1>	
+	<p><strong>(注意不要把下面的数字一下设置得过高，有的模板解析器会令浏览器崩掉，如:jqueryTmpl)</strong></p>
+	<div class="box">
+		<p> 数据格式：<strong>1</strong> 条单元数据 {index : 0, name: 'bobo', age : 28 } 每条数据有 <strong>3</strong> 个字段</p>	
+		<p> 数据条数:<input type="text" value="10000" />(万)</p>
+		<p> 渲染次数:<input type="text" value="1" />(次)</p>
+		<p> 测试案例:<input class="case" type="text" value="txTpl, mTpl, tmpl, Mustache, ejs" /> </p>
+		<p>(用逗号隔开，可选测试案例：txTpl, mTpl, tmpl, ejs,  Mustache, juicer, doT, artTemplate, baiduTemplate, kissyTemplate, easyTemplate, jqueryTmpl)</p>
+	</div>
 
-<div class="box">
-	<p> 数据条数:<input type="text" value="10000" />  </p>
-	<p> 渲染次数:<input type="text" value="1" /> </p>
-	<p> 测试案例:<input type="text" value="txTpl, mTpl, tmpl, Mustache, ejs" style="width:620px;" /> </p>
-	<p>(用逗号隔开，可选测试案例：txTpl, mTpl, tmpl, ejs,  Mustache, juicer, doT, artTemplate, baiduTemplate, kissyTemplate, easyTemplate, jqueryTmpl)</p>
+	<p>
+		<button id="button-test" style="padding: 5px;">开始测试</button>
+		<span id="message" style="font-size:12px"></span>
+	</p>
+	<div id="container" style="min-width: 400px; margin: 0 auto"></div>
 </div>
 
-<p>
-	<button id="button-test" onclick="testFunc(this)" style="padding: 5px;">开始测试</button>
-	<span id="message" style="font-size:12px"></span>
-</p>
-<div id="container" style="min-width: 400px; margin: 0 auto"></div>
 </body>
 </html>
