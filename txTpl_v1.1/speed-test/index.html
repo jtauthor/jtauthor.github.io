@@ -270,8 +270,8 @@ function testFunc(trigger) {
 
 	// 测试案例开关:  mTpl, txTpl, tmpl, ejs,  Mustache, juicer, doT, artTemplate, baiduTemplate, kissyTemplate, easyTemplate, jqueryTmpl
 	var caseSwitcher =$('.box input').eq(2).val().trim() || 'mTpl, tmpl, ejs'; 
-	var n=Number($('.box input').eq(0).val()) || 1 ; // 数据量条数
-	var times=parseInt($('.box input').eq(1).val())|| 1;	// 渲染次数 		
+	var n=Number($('.box input').eq(0).val()) || 100 ; // 数据量条数
+	var times=parseInt($('.box input').eq(1).val())|| 100;	// 渲染次数 		
 	var data = (function(){ //数据json 每条数据显示的字段数为3个
 		var arr=[];
 		for (var i = 0, len=n; i < len; i++) {
