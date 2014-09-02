@@ -270,7 +270,7 @@ function testFunc(trigger) {
 
 	// 测试案例开关:  mTpl, txTpl, tmpl, ejs,  Mustache, juicer, doT, artTemplate, baiduTemplate, kissyTemplate, easyTemplate, jqueryTmpl
 	var caseSwitcher =$('.box input').eq(2).val().trim() || 'mTpl, tmpl, ejs'; 
-	var n=Number($('.box input').eq(0).val()) * 10000|| 10 * 10000; // 数据量条数
+	var n=Number($('.box input').eq(0).val()) || 1 ; // 数据量条数
 	var times=parseInt($('.box input').eq(1).val())|| 1;	// 渲染次数 		
 	var data = (function(){ //数据json 每条数据显示的字段数为3个
 		var arr=[];
@@ -454,7 +454,7 @@ $(document).delegate('#button-test', 'click',testFunc);
 	<p><strong>(注意不要把下面的数字一下设置得过高，有的模板解析器会令浏览器崩掉，如:jqueryTmpl)</strong></p>
 	<div class="box">
 		<p> 数据格式：<strong>1</strong> 条单元数据 {index : 0, name: 'bobo', age : 28 } 每条数据有 <strong>3</strong> 个字段</p>	
-		<p> 数据条数:<input type="text" value="1" />(万)</p>
+		<p> 数据条数:<input type="text" value="1" />(条)</p>
 		<p> 渲染次数:<input type="text" value="10000" />(次)</p>
 		<p> 测试案例:<input class="case" type="text" value="txTpl, mTpl, tmpl, Mustache, ejs" /> </p>
 		<p>(用逗号隔开，可选测试案例：txTpl, mTpl, tmpl, ejs,  Mustache, juicer, doT, artTemplate, baiduTemplate, kissyTemplate, easyTemplate, jqueryTmpl)</p>
