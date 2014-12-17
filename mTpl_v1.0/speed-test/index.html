@@ -21,7 +21,7 @@ function tppl(tpl, data, fast) {
         fn.$$ = new Function(fn.$);
         return fn.$$.apply(d);
     };
-    if (!fn.$) {
+    //if (!fn.$) {
         fn.$ = 'var $="";';
         var tpls = tpl.replace(/[\r\t\n]/g, " ").split('[:'),
             i = 0
@@ -36,7 +36,7 @@ function tppl(tpl, data, fast) {
             i++;
         }
         fn.$ += "return $";
-    }
+    //}
 
     return data ? fn(data) : fn;
 }
