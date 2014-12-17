@@ -69,7 +69,7 @@ function renderTestCaseList(caseSwitcher, joinChar, times, data){
 			tester: function () {
 			    var source = document.getElementById('tppl').innerHTML;
 			    var s='';
-			    for (var i = 0; i < number; i ++) {
+			    for (var i = 0; i < times; i++) {
 			        s = tppl(source)(data, true);
 			        console.log(s);
 			        return s;
