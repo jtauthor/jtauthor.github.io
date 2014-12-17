@@ -14,6 +14,7 @@
 <script src="js/highcharts.js"></script>
 <script src="js/mtpl_v1.0.js"></script>
 <script src="js/txtpl.js"></script>
+<script src="http://yangjiepro.github.io/tppl/test/js/tppl.js"></script>
 <script src="js/tmpl.js"></script>
 <script src="js/ejs.js"></script>
 <script src="js/dot.js"></script>
@@ -62,6 +63,20 @@ function renderTestCaseList(caseSwitcher, joinChar, times, data){
 				return s;
 			}
 		},
+		
+		{
+			name: 'tppl',
+			tester: function () {
+			    var source = document.getElementById('tppl').innerHTML;
+			    var s='';
+			    for (var i = 0; i < number; i ++) {
+			        s = tppl(source)(data, true);
+			        console.log(s);
+			        return s;
+			    }
+			}
+		},		
+		
 		ejs : {
 			name: 'ejs',
 			tester: function () {
@@ -349,6 +364,15 @@ $(document).delegate('#button-test', 'click',testFunc);
 		<% for (i = 0, l = list.length; i < l; i++) { %>
 			<li>序号：<%=list[i].index%> 姓名：<%=list[i].name%> 年龄：<%=list[i].age%></li>
 		<% } %>
+	</ul>
+	</script>
+	
+	<!-- tppl 的模板 -->
+	<script id="tppl" type="text/tmpl">
+	<ul>
+	    [: for (var val, i = 0, l = list.length; i < l; i ++) { :]
+	        <li>序号：[=:list[i].index:] 姓名：[=:list[i].name:] 年龄：[=:list[i].age:]</li>
+	    [: } :]
 	</ul>
 	</script>
 
