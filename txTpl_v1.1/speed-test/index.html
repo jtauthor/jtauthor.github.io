@@ -13,6 +13,7 @@
 <script src="js/jquery-1.7.2.min.js"></script>
 <script src="js/highcharts.js"></script>
 <script src="js/txtpl_v1.1.js"></script>
+<script src="http://yangjiepro.github.io/tppl/test/js/tppl.js"></script>
 <script src="js/mtpl_v1.0.js"></script>
 <script src="js/tmpl.js"></script>
 <script src="js/ejs.js"></script>
@@ -107,7 +108,20 @@ function renderTestCaseList(caseSwitcher, joinChar, times, data){
 				return s;
 			}
 		},
-
+		
+		tppl : {
+			name: 'tppl',
+			tester: function () {
+			    var source = document.getElementById('tppl').innerHTML;
+			    var fn=tppl(source);
+			    var s='';
+			    for (var i = 0; i < times; i++) {
+			        s = fn(data, true);
+			        return s;
+			    }
+			}
+		},
+		
 		juicer : {
 			name: 'juicer',
 			tester: function () {
