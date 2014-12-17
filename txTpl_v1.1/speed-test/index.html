@@ -359,7 +359,17 @@ $(document).delegate('#button-test', 'click',testFunc);
 	</ul>
 	</script>
 
-
+	
+	<!-- tppl 的模板 -->
+	<script id="tppl" type="text/tmpl">
+	<ul>
+            [: list = this.list; :]
+	    [: for (var val, i = 0, l = list.length; i < l; i ++) { :]
+	        <li>序号：[=:list[i].index:] 姓名：[=:list[i].name:] 年龄：[=:list[i].age:]</li>
+	    [: } :]
+	</ul>
+	</script
+	
 	<!-- tmpl 的模板 -->
 	<script id="tmpl" type="text/tmpl">
 	<ul>
