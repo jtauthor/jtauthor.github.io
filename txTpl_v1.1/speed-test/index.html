@@ -43,7 +43,20 @@ function renderTestCaseList(caseSwitcher, joinChar, times, data){
 				return s;
 			}
 		},
-
+		
+		tppl : {
+			name: 'tppl',
+			tester: function () {
+			    var source = document.getElementById('tppl').innerHTML;
+			    var fn=tppl(source);
+			    var s='';
+			    for (var i = 0; i < times; i++) {
+			        s = fn(data, true);
+			        return s;
+			    }
+			}
+		},
+		
 		mTpl : {
 			name: 'mTpl',
 			tester: function () {
@@ -106,19 +119,6 @@ function renderTestCaseList(caseSwitcher, joinChar, times, data){
 					s = doTtmpl(data);
 				}
 				return s;
-			}
-		},
-		
-		tppl : {
-			name: 'tppl',
-			tester: function () {
-			    var source = document.getElementById('tppl').innerHTML;
-			    var fn=tppl(source);
-			    var s='';
-			    for (var i = 0; i < times; i++) {
-			        s = fn(data, true);
-			        return s;
-			    }
 			}
 		},
 		
