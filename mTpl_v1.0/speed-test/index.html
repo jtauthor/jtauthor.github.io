@@ -9,10 +9,20 @@
 		padding: 10px 40px;
 	}
 
+	.wrap h1{
+		padding-bottom: 10px;
+		font-weight: bolder;
+    	font-family: "Helvetica Neue", sans-serif;
+    }
+
 	.box p {
 		margin: 8px 0 0;
 	}
 
+	.box {
+		padding-bottom: 20px;
+	}
+	
 	.box p strong{
 		width: 140px;
 		display: inline-block;
@@ -29,6 +39,7 @@
 	.box span {
 		color: #333;
 	}
+	#message{color: #0b6ee1;}
 </style>
 <script src="js/jquery-1.7.2.min.js"></script>
 <script src="js/highcharts.js"></script>
@@ -302,7 +313,8 @@
 		})();
 	}
 
-	$(document).delegate('#button-test', 'click', testFunc);
+	// $(document).delegate('#button-test', 'click', testFunc);
+	setTimeout(testFunc, 1000);
 </script>
 
 </head>
@@ -385,12 +397,12 @@
 		<p> <strong>Template Count：</strong><span>1000</span></p>
 		<p> <strong>Test Engines：</strong><span class="case">mTpl, baiduTemplate, kissyTemplate, easyTemplate, Handlebars, Mustache, tmpl, ejs, jqueryTmpl</span></p>
 		<!-- <p>(友情提醒：不要把上面的数字设置得过高，有的模板解析器很容易令浏览器崩掉，如:jqueryTmpl)</p> -->
+		<p> <strong>Progress：</strong><span id="message"></span></p>
 	</div>
 
-	<p>
+	<!-- <p>
 		<button id="button-test" style="padding: 5px;">Start Test</button>
-		<span id="message" style="font-size:12px"></span>
-	</p>
+	</p> -->
 	<div id="container" style="min-width: 400px; margin: 0 auto"></div>
 </div>
 </body>
