@@ -1,51 +1,41 @@
 <!DOCTYPE HTML>
 <html>
+
 <head>
 <meta charset="utf-8" />
-<title>template speed test</title>
+<title>Benchmark of JavaScript Template Engines</title>
 <style>
-.wrap{padding: 0 10px;}
-.box p{margin:8px 0 0;}
-.box input{width:100px;}
-.box input.case{width:90%;}
-.box span{color:#333;}
+	.wrap {
+		padding: 10px 40px;
+	}
+
+	.box p {
+		margin: 8px 0 0;
+	}
+
+	.box p strong{
+		width: 140px;
+		display: inline-block;
+	}
+
+	.box input {
+		width: 100px;
+	}
+
+	.box input.case {
+		width: 620px;
+	}
+
+	.box span {
+		color: #333;
+	}
 </style>
 <script src="js/jquery-1.7.2.min.js"></script>
 <script src="js/highcharts.js"></script>
 <script src="js/mtpl_v1.0.js"></script>
 <script src="js/txtpl.js"></script>
-<!--<script src="http://yangjiepro.github.io/tppl/test/js/tppl.js"></script>-->
-<script>
-function tppl(tpl, data, fast) {
-    var fn = function(d, f) {
-        fn.$$ = new Function(fn.$);
-        return fn.$$.apply(d);
-    };
-    //if (!fn.$) {
-        fn.$ = 'var $="";';
-        var tpls = tpl.replace(/[\r\t\n]/g, " ").split('[:'),
-            i = 0
-        while (i < tpls.length) {
-            var p = tpls[i];
-            if (i) {
-                var x = p.indexOf(':]');
-                fn.$ += p.substr(0, x);
-                p = p.substr(x + 2)
-            }
-            fn.$ += "$+='" + p.replace(/\[\=\:(.*?)\:\]/g, "'+$1+'") + "';";
-            i++;
-        }
-        fn.$ += "return $";
-    //}
-
-    return data ? fn(data) : fn;
-}
-</script>
 <script src="js/tmpl.js"></script>
 <script src="js/ejs.js"></script>
-<script src="js/dot.js"></script>
-<script src="js/juicer.js"></script>
-<script src="js/arttemplate.js"></script>
 <script src="js/kissy.js"></script>
 <script src="js/kissytemplate.js"></script>
 <script src="js/mustache.js"></script>
@@ -55,379 +45,277 @@ function tppl(tpl, data, fast) {
 <script src="js/handlebars-v1.3.0.js"></script>
 
 <script>
-//生成测试案例list 
-function renderTestCaseList(caseSwitcher, joinChar, times, data){	
-	var allTestCaseList={
-		mTpl : {
-			name: 'mTpl',
-			tester: function () {
-				var source = document.getElementById('tpl-1').innerHTML;
-				var s='';
-				for (var i = 0; i < times; i++) {
-					s = mTpl({
-						str 	: source,
-						data 	: data,
-						isCache	: false,
-						
-						//isEncode 			: false,
-						isKeepRN 			: true,
-						htmlCommentCode 	: 1						
-					});				
+	function renderTestCaseList(caseSwitcher, joinChar, times, data) {
+		const allTestCaseList = {
+			mTpl: {
+				name: 'mTpl',
+				tester: function () {
+					let str = document.getElementById('tpl-1').innerHTML;
+					let s = '';
+					for (let i = 0; i < times; i++) {
+						s = mTpl({ str, data });
+					}
+					// console.log(s);
+					return s;
 				}
-				console.log(s);
-				return s;
-			}
-		},
+			},
 
-		txTpl : {
-			name: 'txTpl',
-			tester: function () {
-				var source = document.getElementById('tpl-1').innerHTML;
-				var s='';
-				for (var i = 0; i < times; i++) {
-					s = txTpl(source, data, '', '', false);				
-				}
-				console.log(s);
-				return s;
-			}
-		},
-		
-		tppl : {
-			name: 'tppl',
-			tester: function () {
-			    var source = document.getElementById('tppl').innerHTML;
-			    var s='';
-			    for (var i = 0; i < times; i++) {
-			        s = tppl(source)(data, true);
-			        console.log(s);
-			        return s;
-			    }
-			}
-		},		
-		
-		ejs : {
-			name: 'ejs',
-			tester: function () {
-				var source = document.getElementById('tpl-1').innerHTML;
-				var s='';
-				for (var i = 0; i < times; i++) {
-					s = new EJS({
-						text:source,
-						type:"<",
-						cache : false
-					}).render(data);
-				}
+			ejs: {
+				name: 'ejs',
+				tester: function () {
+					let source = document.getElementById('tpl-1').innerHTML;
+					let s = '';
+					for (let i = 0; i < times; i++) {
+						s = new EJS({
+							text: source,
+							type: "<",
+							cache: false
+						}).render(data);
+					}
 
-				return s;
-			}
-		},
-		
-		tmpl : {
-			name: 'tmpl',
-			tester: function () {
-				var source = document.getElementById('tpl-1').innerHTML;
-				var s='';
-				for (var i = 0; i < times; i++) {
-					s = tmpl(source, data);
+					return s;
 				}
-				return s;
-			}
-		},
+			},
 
-		doT : {
-			name: 'doT',
-			tester: function () {
-				var source = document.getElementById('doT').innerHTML;
-				var s='';
-				for (var i = 0; i < times; i++) {
-					s = doT.template(source)(data);
+			tmpl: {
+				name: 'tmpl',
+				tester: function () {
+					let source = document.getElementById('tpl-1').innerHTML;
+					let s = '';
+					for (let i = 0; i < times; i++) {
+						s = tmpl(source, data);
+					}
+					return s;
 				}
-				return s;
-			}
-		},
+			},
 
-		juicer : {
-			name: 'juicer',
-			tester: function () {
-				var config = {cache:true};
+			Mustache: {
+				name: 'Mustache',
+				tester: function () {
+					let source = document.getElementById('Mustache').innerHTML;
+					let s = '';
+					for (let i = 0; i < times; i++) {
+						s = Mustache.to_html(source, data);
+					}
+					return s;
+				}
+			},
 
-				var source = document.getElementById('juicer').innerHTML;
-				var s='';
-				for (var i = 0; i < times; i++) {
-					s=juicer.to_html(source, data, config);
+			Handlebars: {
+				name: 'Handlebars',
+				tester: function () {
+					let source = document.getElementById('Handlebars').innerHTML;
+					let s = '';
+					for (let i = 0; i < times; i++) {
+						s = Handlebars.compile(source)(data);
+					}
+					return s;
 				}
-				return s;
-			}
-		},
+			},
 
-		artTemplate : {
-			name: 'artTemplate',
-			tester: function () {
-				var source = document.getElementById('tpl-1').innerHTML;
-				var s='';
-				for (var i = 0; i < times; i++) {
-					s=template.compile(source)(data);
+			baiduTemplate: {
+				name: 'baiduTemplate',
+				tester: function () {
+					let s = '';
+					for (let i = 0; i < times; i++) {
+						s = baidu.template('baidu-template', data);
+					}
+					return s;
 				}
-				return s;
-			}
-		},
+			},
 
-		Mustache : {
-			name: 'Mustache',
-			tester: function () {
-				var source = document.getElementById('Mustache').innerHTML;
-				var s='';
-				for (var i = 0; i < times; i++) {
-					s = Mustache.to_html(source, data);
+			easyTemplate: {
+				name: 'easyTemplate',
+				tester: function () {
+					let source = document.getElementById('easyTemplate').innerHTML;
+					let s = '';
+					for (let i = 0; i < times; i++) {
+						let fn = easyTemplate(source);
+						s = fn(data) + '';
+					}
+					return s;
 				}
-				return s;
-			}
-		},
+			},
 
-	    Handlebars : {
-	        name: 'Handlebars',
-	        tester: function () {
-	            var source = document.getElementById('Handlebars').innerHTML;
-	            var s='';
-	            for (var i = 0; i < times; i++) {
-	                s = Handlebars.compile(source)(data);
-	            }
-	            return s;
-	        }
-	    },
-
-		baiduTemplate : {
-			name: 'baiduTemplate',
-			tester: function () {
-				var s='';
-				for (var i = 0; i < times; i++) {
-					s=baidu.template('baidu-template', data);
+			jqueryTmpl: { // jqueryTmpl 太慢，可能导致浏览器停止响应
+				name: 'jqueryTmpl',
+				tester: function () {
+					let source = document.getElementById("jqueryTmpl").innerHTML;
+					let s = '';
+					for (let i = 0; i < times; i++) {
+						s = $.tmpl(source, data);
+					}
+					return s;
 				}
-				return s;
-			}
-		},
-		
-		easyTemplate : {
-			name: 'easyTemplate',
-			tester: function () {
-				var source = document.getElementById('easyTemplate').innerHTML;
-				var s='';
-				for (var i = 0; i < times; i++) {
-				   	var fn = easyTemplate(source);
-				   	s=fn(data) + '';
-				}
-				return s;
-			}
-		},		
-		
-		jqueryTmpl : { //jqueryTmpl 太慢，可能导致浏览器停止响应
-			name: 'jqueryTmpl',
-			tester: function () {
-				var source = document.getElementById("jqueryTmpl").innerHTML;
-				var s='';
-				for (var i = 0; i < times; i++) {
-					s=$.tmpl(source, data);
-				}
-				return s;
-			}
-		}		
-	};
-
-	KISSY.use('template',function(S,T) {
-		allTestCaseList.kissyTemplate = {
-			name: 'kissyTemplate',
-			tester: function () {
-				var source= document.getElementById('kissy').innerHTML;
-				var s='';
-				for (var i = 0; i < times; i++) {
-					s=T(source).render(data);
-				}
-				return s;
 			}
 		};
-	});
-	
-	var testCaseList=[], arr=caseSwitcher.split(joinChar);
-	for(var i=0, len=arr.length; i<len;i++){
-		testCaseList.push(allTestCaseList[arr[i].trim()]);		
+
+		KISSY.use('template', function (S, T) {
+			allTestCaseList.kissyTemplate = {
+				name: 'kissyTemplate',
+				tester: function () {
+					let source = document.getElementById('kissy').innerHTML;
+					let s = '';
+					for (let i = 0; i < times; i++) {
+						s = T(source).render(data);
+					}
+					return s;
+				}
+			};
+		});
+
+		const testCaseList = [], arr = caseSwitcher.split(joinChar);
+		for (let i = 0, len = arr.length; i < len; i++) {
+			testCaseList.push(allTestCaseList[arr[i].trim()]);
+		}
+
+		return testCaseList;
 	}
 
-	return testCaseList;
-}
+	function getChart(categories, n, times) {
+		return new Highcharts.Chart({
+			chart: {
+				renderTo: 'container',
+				height: categories.length * 30 + 100,
+				type: 'bar'
+			},
 
-//画图
-function getChart(categories, n, times){
-    return new Highcharts.Chart({
-        chart: {
-            renderTo: 'container',
-            height: categories.length * 30 +100,
-            type: 'bar'
-        },
+			title: {
+				text: 'Benchmark of JavaScript Template Engines'
+			},
 
-        title: {
-            text: 'JavaScript 模板引擎效率测试'
-        },
+			subtitle: {
+				text: n + ' items × ' + times + ' renders'
+			},
 
-        subtitle: {
-            text: n + ' 条数据 × ' + times + ' 个模板片段'
-        },
-                
-        xAxis: {
-            categories: categories,
-            labels: {
-                align: 'right',
-                style: {
-                    fontSize: '12px',
-                    fontFamily: 'Verdana, sans-serif'
-                }
-            }
-        },
-
-        yAxis: {
-            min: 0,
-            title: {
-                text: '耗时(毫秒)'
-            }
-        },
-
-        legend: {
-            enabled: false
-        },
-
-        tooltip: {
-            formatter: function() {
-                return '<b>'+ this.x +'</b><br/>'+
-                    this.y + '毫秒';
-            }
-
-        },
-
-        credits: {
-            enabled: false
-        },
-		plotOptions: {
-			bar: {
-				dataLabels: {
-					enabled: true,
-                    formatter: function () {
-                        return this.y + 'ms';
-                    }
+			xAxis: {
+				categories: categories,
+				labels: {
+					align: 'right',
+					style: {
+						fontSize: '12px',
+						fontFamily: 'Verdana, sans-serif'
+					}
 				}
+			},
+
+			yAxis: {
+				min: 0,
+				title: {
+					text: 'Cost Time(ms)'
+				}
+			},
+
+			legend: {
+				enabled: false
+			},
+
+			tooltip: {
+				formatter: function () {
+					return '<b>' + this.x + '</b><br/>' +
+						this.y + 'ms';
+				}
+
+			},
+
+			credits: {
+				enabled: false
+			},
+			plotOptions: {
+				bar: {
+					dataLabels: {
+						enabled: true,
+						formatter: function () {
+							return this.y + 'ms';
+						}
+					}
+				}
+			},
+			series: [{
+				data: []
+			}]
+		});
+	}
+
+	function testFunc(pTrigger) {
+		let trigger = pTrigger || this;
+		if ($(trigger).attr('disabled')) { return; }
+		$(trigger).attr('disabled', 'true');
+
+		// 测试案例开关:  mTpl, tmpl, ejs,  Mustache, baiduTemplate, kissyTemplate, easyTemplate, jqueryTmpl
+		let caseSwitcher = $('.box span').eq(2).text().trim() || 'mTpl, tmpl, ejs';
+		let n = Number($('.box span').eq(0).text()) || 100; // 数据条数
+		let times = parseInt($('.box span').eq(1).text()) || 100; // 不开启缓存等价于模板数量 		
+		let randomInt = function (under, over) {
+			switch (arguments.length) {
+				case 1: return parseInt(Math.random() * under + 1, 10);
+				case 2: return parseInt(Math.random() * (over - under + 1) + under, 10);
+				default: return 0;
 			}
-		},
-        series: [{
-            data : []
-        }]
-    });
-}
+		};
 
-//测试函数
-function testFunc(trigger) { 
-	var trigger = trigger || this;
-	if($(trigger).attr('disabled')){return;}
-	$(trigger).attr('disabled','true');
+		let data = (function () { // 数据json 每条数据显示的字段数为3个
+			let arr = [];
+			for (let i = 0, len = n; i < len; i++) {
+				arr.push({ index: i, name: 'john' + randomInt(10, 60), age: randomInt(10, 60) });
+			}
+			return { list: arr };
+		})();
 
-	// 测试案例开关:  mTpl, txTpl, tmpl, ejs,  Mustache, juicer, doT, artTemplate, baiduTemplate, kissyTemplate, easyTemplate, jqueryTmpl
-	var caseSwitcher =$('.box input').eq(2).val().trim() || 'mTpl, tmpl, ejs'; 
-	var n=Number($('.box input').eq(0).val()) || 100; // 数据量条数
-	var times=parseInt($('.box input').eq(1).val())|| 100;	// 渲染次数 		
-        var randomInt = function (under, over){
-            switch(arguments.length){
-                case 1: return parseInt(Math.random()*under+1, 10);
-                case 2: return parseInt(Math.random()*(over-under+1) + under, 10);
-                default: return 0;
-            }
-        };
-	var data = (function(){ //数据json 每条数据显示的字段数为3个
-		var arr=[];
-		for (var i = 0, len=n; i < len; i++) {
-			arr.push({index : i, name: 'john'+randomInt(10,60), age : randomInt(10,60) });	   
+		caseSwitcher = caseSwitcher.charAt(0) != ',' ? caseSwitcher : caseSwitcher.slice(1).trim();
+		caseSwitcher = caseSwitcher.slice(-1) != ',' ? caseSwitcher : caseSwitcher.slice(0, caseSwitcher.length - 1).trim();
+
+		let testCaseList = renderTestCaseList(caseSwitcher, ',', times, data);
+
+		let colors = Highcharts.getOptions().colors;
+		colors = colors.concat(colors, colors, colors, colors, colors); // 颜色数组
+
+		let categories = [];
+		for (let i = 0; i < testCaseList.length; i++) {
+			categories.push(testCaseList[i].name);
 		}
-		return {list: arr};
-	})();
 
-	caseSwitcher=caseSwitcher.charAt(0)!=','?caseSwitcher:caseSwitcher.slice(1).trim();
-	caseSwitcher=caseSwitcher.slice(-1)!=','?caseSwitcher:caseSwitcher.slice(0,caseSwitcher.length-1).trim();
+		let chart = getChart(categories, n, times);
 
-	var testCaseList = renderTestCaseList(caseSwitcher, ',', times, data);  
-	
-    var colors = Highcharts.getOptions().colors;
-	colors=colors.concat(colors,colors,colors,colors,colors); //颜色数组
-	
-    var categories = [];
-    for (var i = 0; i < testCaseList.length; i++) {
-        categories.push(testCaseList[i].name);
-    }
+		oMessage = document.getElementById('message');
 
-    var chart = getChart(categories, n, times);
+		(function () {// 递归函数    	
+			if (!testCaseList.length) {
+				$('#button-test').removeAttr('disabled');
+				oMessage.innerHTML = 'Test Finished';
+				return;
+			}
 
-	oMessage = document.getElementById('message');
+			let currentCase = testCaseList.shift(), t = arguments.callee;
+			oMessage.innerHTML = 'Testing: ' + currentCase.name + '...';
 
-    (function () {//递归函数    	
-        if (!testCaseList.length) {
-			$('#button-test').removeAttr('disabled');
-			oMessage.innerHTML='测试已完成';
-			return;
-		}	
-		
-		var currentCase = testCaseList.shift(), t=arguments.callee;
-		oMessage.innerHTML = '正在测试: ' + currentCase.name + '...';	
-		
-        var startTime = Date.now();
-        var s=currentCase.tester();
-        //console.log(currentCase.name); console.log(s);
-        var endTime = Date.now();
+			let startTime = Date.now();
+			let s = currentCase.tester();
+			// console.log(currentCase.name); console.log(s);
+			let endTime = Date.now();
 
-        chart.series[0].addPoint({ color: colors.shift(),  y: endTime-startTime });
-		
-        setTimeout(function () {
-            t();
-        }, 1000);    
-    })();
-}
+			chart.series[0].addPoint({ color: colors.shift(), y: endTime - startTime });
 
-$(document).delegate('#button-test', 'click',testFunc);
+			setTimeout(function () {
+				t();
+			}, 1000);
+		})();
+	}
+
+	$(document).delegate('#button-test', 'click', testFunc);
 </script>
+
 </head>
 
 <body>
 
 <div id="template-box">
-	<!-- mTpl、tmpl、ejs、artTemplate、的模板 -->
+	<!-- mTpl、tmpl、ejs的模板 -->
 	<script id="tpl-1" type="text/tmpl">
 	<ul>
 		<% for (i = 0, l = list.length; i < l; i++) { %>
 			<li>序号：<%=list[i].index%> 姓名：<%=list[i].name%> 年龄：<%=list[i].age%></li>
 		<% } %>
-	</ul>
-	</script>
-	
-	<!-- tppl 的模板 -->
-	<script id="tppl" type="text/tmpl">
-	<ul>
-            [: list = this.list; :]
-	    [: for (var val, i = 0, l = list.length; i < l; i ++) { :]
-	        <li>序号：[=:list[i].index:] 姓名：[=:list[i].name:] 年龄：[=:list[i].age:]</li>
-	    [: } :]
-	</ul>
-	</script>
-
-	<!--juicer 的模板 -->
-	<script id="juicer" type="text/tmpl">
-	<ul>
-		{@each list as val}
-			<li>序号：$${val.index} 姓名：$${val.name} 年龄：$${val.age}</li>
-		{@/each}
-	</ul>
-	</script>
-
-	<!-- doT 的模板 -->
-	<script id="doT" type="text/tmpl">
-	<ul>
-		{{ for (var val, i = 0, l = it.list.length; i < l; i++) { }}
-			{{ val = it.list; }}
-			<li>序号：{{=val[i].index}} 姓名：{{=val[i].name}} 年龄：{{=val[i].age}}</li>
-		{{ } }}
 	</ul>
 	</script>
 	
@@ -488,21 +376,23 @@ $(document).delegate('#button-test', 'click',testFunc);
 </div>
 
 <div class="wrap">
-	<h1>JavaScript模板引擎速度比较</h1>	
-	<p><strong>(注意不要把下面的数字一下设置得过高，有的模板解析器会令浏览器崩掉，如:jqueryTmpl)</strong></p>
+	<h1>Benchmark of JavaScript Template Engines</h1>
+	<h3>Test Case: Render a list. (each item displays index, name, age)</h3>
+
 	<div class="box">
-		<p> 数据格式：<strong>1</strong> 条单元数据 {index : 0, name: 'bobo', age : 28 } 每条数据有 <strong>3</strong> 个字段</p>
-		<p> 数据条数：<input type="text" value="10000" />(条)</p>
-		<p> 模板数量：<input type="text" value="10" />(个)</p>
-		<p> 测试案例：<input class="case" type="text" value="txTpl, mTpl, tmpl, Mustache, ejs" /> </p>
-		<p>(用逗号隔开，可选测试案例：mTpl, txTpl, doT, Handlebars, artTemplate, juicer, Mustache, tmpl, easyTemplate, ejs, baiduTemplate, kissyTemplate, jqueryTmpl)</p>
+		<p> <strong>Single Item：</strong>format {index : 0, name: 'bobo', age : 28 } </p>
+		<p> <strong>Data Count：</strong><span>100</span></p>
+		<p> <strong>Template Count：</strong><span>1000</span></p>
+		<p> <strong>Test Engines：</strong><span class="case">mTpl, baiduTemplate, kissyTemplate, easyTemplate, Handlebars, Mustache, tmpl, ejs, jqueryTmpl</span></p>
+		<!-- <p>(友情提醒：不要把上面的数字设置得过高，有的模板解析器很容易令浏览器崩掉，如:jqueryTmpl)</p> -->
 	</div>
 
 	<p>
-		<button id="button-test" style="padding: 5px;">开始测试</button>
+		<button id="button-test" style="padding: 5px;">Start Test</button>
 		<span id="message" style="font-size:12px"></span>
 	</p>
 	<div id="container" style="min-width: 400px; margin: 0 auto"></div>
 </div>
 </body>
+
 </html>
