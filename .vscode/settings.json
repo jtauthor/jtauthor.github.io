@@ -1,0 +1,48 @@
+{
+  // prettier support language:
+  // JavaScript (including experimental features)
+  // JSX / Angular / Vue
+  // Flow / TypeScript
+  // CSS, Less, and SCSS
+  // HTML, JSON, GraphQL
+  // Markdown, including GFM and MDX
+  // YAML
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[less]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "files.exclude": {
+    // "**/.git": false,
+    ".git/[^c]*": true,
+    // "build/**": true,
+    ".editorconfig": true,
+    ".eslintignore": true,
+    ".eslintrc.*": true,
+    ".gitignore": true,
+    ".npmrc": true,
+    ".prettierignore": true,
+    ".prettierrc.*": true,
+    ".history": false,
+    "tsconfig.json": true,
+    "commitlint.config.js": true
+  },
+
+  // "editor.rulers": [80, 120],
+  // "editor.codeActionsOnSave": ["source.organizeImports", "source.fixAll"],
+  // "editor.codeActionsOnSave": {
+  //   "source.fixAll.eslint": false
+  // },
+  // // 两者会在格式化js时冲突，所以需要关闭默认js格式化程序
+  // "javascript.format.enable": false,
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  "editor.wordWrap": "on",
+  // 打开新文件，是否替换当前文件
+  "workbench.editor.enablePreview": false
+}

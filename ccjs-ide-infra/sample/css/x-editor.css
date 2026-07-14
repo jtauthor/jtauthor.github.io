@@ -1,0 +1,29 @@
+*,:after,:before{box-sizing:border-box}h1,h2,h3,h4,h5,h6,li,ol,ul{font-weight:400;list-style:none;margin:0;padding:0}:host{all:initial;background-color:#fff;color:#34495e;display:flex;flex-grow:1;font-size:13px;height:100%;overflow:hidden;text-align:center;width:100%}root{display:flex;flex-grow:1;height:100%;position:relative;width:100%}img[src$=".svg"]{pointer-events:none}
+
+/* 
+  !Tips:
+  Chrome系统最小窗口为: width:500px, height:375px;
+  网页可视区域最小为: width:500px, height:150px(极个别情况下为134px)
+  父容器样式需设置宽高，一个示例：
+    Dom:
+      <div id="app"><Layout></div>
+    Style:
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        min-width: fit-content;
+        display: flex;
+        flex-direction: column;
+      }
+
+      #app {
+        padding: 30px;
+        flex-grow: 1;
+        min-width: 1000px;
+        min-height: 500px;
+        overflow: hidden;
+        background-color: #6495ed;
+      }
+*/.layout_mod{background-color:#fff;color:#34495e;display:flex;flex-direction:column;flex-grow:1;font-size:13px;height:100%;min-height:200px;min-width:520px;overflow:hidden;text-align:center;width:100%}.layout_mod .layout_ft,.layout_mod .layout_hd{line-height:21px;min-height:21px}.layout_mod .layout_bd{display:flex;flex-grow:1;width:100%}.layout_mod .layout_bd_l{box-shadow:2px 0 12px 0 rgba(0,0,0,.1);overflow:visible!important;position:relative;transition:width .5s cubic-bezier(.23,1,.32,1);z-index:1!important}.layout_mod .layout_bd_l.show{width:180px}.layout_mod .layout_bd_l.hide{width:0}.layout_mod .layout_bd_l>div{height:100%;position:absolute;right:0;width:180px;z-index:1}.layout_mod .layout_bd_m{display:flex;flex-direction:column;flex-grow:1}.layout_mod .layout_bd_m_t{flex-grow:1;min-height:80px}.layout_mod .layout_bd_m_b{height:100px}.layout_mod .layout_bd_r{box-shadow:2px 0 12px 0 rgba(0,0,0,.1);min-height:100px;transition:width .5s cubic-bezier(.23,1,.32,1);z-index:1}.layout_mod .layout_bd_r.show{width:240px}.layout_mod .layout_bd_r.hide{width:0}.layout_mod .layout_bd_r>div{height:100%;position:relative;width:240px}.layout_mod .layout_bd,.layout_mod .layout_bd_l,.layout_mod .layout_bd_m,.layout_mod .layout_bd_m_b,.layout_mod .layout_bd_m_t,.layout_mod .layout_bd_r,.layout_mod .layout_ft,.layout_mod .layout_hd{overflow:hidden;position:relative;z-index:0}.sidebar-toggle-arrow{cursor:pointer;display:block;height:30px;position:absolute;right:0;text-align:center;top:0;transition:all .2s ease-in-out;width:30px;z-index:1}.sidebar-toggle-arrow.left{left:0;right:auto}.sidebar-toggle-arrow:before{border:6px solid transparent;border-left-color:#ced0d3;content:"";display:inline-block;pointer-events:none;position:absolute;top:50%;transform:translateY(-50%)}.fullscreen{align-items:center;display:flex;height:30px;justify-content:center;position:absolute;right:26px;top:0;width:26px;z-index:1}.fullscreen div{height:16px;width:26px}.fullscreen div svg{height:16px;width:16px}
